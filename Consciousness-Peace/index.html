@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Science of Human Consciousness</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-infinity"></i>
+
+                <h1>Cosmic Awareness</h1>
+            </div>
+            <nav class="navbar">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link active"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="person1.html" class="nav-link"><i class="fas fa-history"></i>
+                            Topics</a></li>
+                    <li><a href="#Latest-Research" class="nav-link"><i class="fas fa-puzzle-piece"></i>
+                            Latest-Research</a>
+                    </li>
+                    <li><a href="quiz.html" class="nav-link"><i class="fas fa-user"></i> Self-Assessment</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <!-- Hero content -->
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>The Science of Human Consciousness</h1>
+                    <p>
+                        A comprehensive exploration of consciousness components: Self, Mind, Intelligence, and Ego based
+                        on
+                        latest 2024-2025 research findings
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#Presentation-Overview" class="btn primary">Start Presentation</a>
+                        <a href="hello.html" class="btn secondary">Learn More</a>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="consciousness-diagram">
+                        <div class="center-node">Consciousness</div>
+
+                        <div class="orbit orbit-1">
+                            <div class="component-node self">Self</div>
+                        </div>
+                        <div class="orbit orbit-2">
+                            <div class="component-node mind">Mind</div>
+                        </div>
+                        <div class="orbit orbit-3">
+                            <div class="component-node intelligence">Intelligence</div>
+                        </div>
+                        <div class="orbit orbit-4">
+                            <div class="component-node ego">Ego</div>
+                        </div>
+                        <div class="orbit orbit-5">
+                            <div class="component-node positive">Positive Effects</div>
+                        </div>
+                        <div class="orbit orbit-6">
+                            <div class="component-node negative">Negative Effects</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script>
+        const hero = document.querySelector('.hero');
+
+        // Scene
+        const scene = new THREE.Scene();
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        camera.position.z = 600;
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        hero.appendChild(renderer.domElement);
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.top = '0';
+        renderer.domElement.style.left = '0';
+        renderer.domElement.style.zIndex = '0'; // behind hero content
+
+        // Stars
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 7000;
+        const positions = [];
+        for (let i = 0; i < starCount; i++) {
+            positions.push((Math.random() - 0.5) * 4000);
+            positions.push((Math.random() - 0.5) * 4000);
+            positions.push((Math.random() - 0.5) * 4000);
+        }
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1 });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        // Planets
+        function createPlanet(size, color, x, y, z) {
+            const geo = new THREE.SphereGeometry(size, 32, 32);
+            const mat = new THREE.MeshStandardMaterial({ color });
+            const planet = new THREE.Mesh(geo, mat);
+            planet.position.set(x, y, z);
+            scene.add(planet);
+            return planet;
+        }
+        const planet1 = createPlanet(50, 0xff8844, 200, 100, -300);
+        const planet2 = createPlanet(30, 0x44ff88, -250, -150, -400);
+
+        // Nebula / glowing clouds
+        const textureLoader = new THREE.TextureLoader();
+        const nebulaTexture = textureLoader.load('https://i.ibb.co/Yb7X8hG/nebula.png'); // example transparent PNG
+        const nebulaMaterial = new THREE.SpriteMaterial({ map: nebulaTexture, transparent: true, opacity: 0.5 });
+        const nebula = new THREE.Sprite(nebulaMaterial);
+        nebula.scale.set(1200, 1200, 1);
+        scene.add(nebula);
+
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(ambientLight);
+
+        // Shooting stars
+        const shootingStars = [];
+        for (let i = 0; i < 5; i++) {
+            const star = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 2, 100),
+                new THREE.MeshBasicMaterial({ color: 0xffffff })
+            );
+            star.position.set(Math.random() * -2000, Math.random() * 1000, -100);
+            shootingStars.push(star);
+            scene.add(star);
+        }
+
+        // Animate
+        function animate() {
+            requestAnimationFrame(animate);
+            stars.rotation.y += 0.0005;
+            planet1.rotation.y += 0.001;
+            planet2.rotation.y += 0.0015;
+            nebula.rotation.y += 0.0002;
+
+            // Shooting stars movement
+            shootingStars.forEach(s => {
+                s.position.x += 8;
+                s.position.y -= 4;
+                if (s.position.x > 2000) s.position.x = -2000;
+                if (s.position.y < -1000) s.position.y = 1000;
+            });
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Mouse parallax
+        document.addEventListener('mousemove', (e) => {
+            camera.position.x = (e.clientX - window.innerWidth / 2) * 0.05;
+            camera.position.y = -(e.clientY - window.innerHeight / 2) * 0.05;
+            camera.lookAt(scene.position);
+        });
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+
+
+
+    <!-- Overview Section -->
+    <section id="overview" class="overview">
+        <div class="container">
+            <div class="section-header" id="Presentation-Overview">
+                <h2>Presentation Overview</h2>
+                <p>A 10-member team presentation exploring the depths of human consciousness</p>
+            </div>
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3>10</h3>
+                    <p>Team Members</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-presentation"></i>
+                    <h3>30+</h3>
+                    <p>Slides</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>60</h3>
+                    <p>Minutes</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-research"></i>
+                    <h3>40+</h3>
+                    <p>Research Sources</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Structure Section -->
+    <section class="team-structure">
+        <div class="container" id="Presentation-Structure">
+            <h2>Presentation Structure</h2>
+            <div class="team-grid">
+                <div class="team-card" data-person="1">
+                    <div class="card-header">
+                        <i class="fas fa-history"></i>
+                        <h3>Kumrawat Kritika</h3> <br>
+                    </div>
+                    <h4>Introduction & Overview</h4>
+                    <p>Definition of consciousness & historical evolution</p>
+                    <div class="slide-count">3 slides</div>
+                    <a href="person1.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="2">
+                    <div class="card-header">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h3>Patel Yugant Yagneshbhai</h3> <br>
+                    </div>
+                    <h4>Consciousness Components Overview</h4>
+                    <p>Brief introduction to main components</p>
+                    <div class="slide-count">2 slides</div>
+                    <a href="person2.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="3">
+                    <div class="card-header">
+                        <i class="fas fa-user"></i>
+                        <h3>Suditi</h3> <br>
+                    </div>
+                    <h4>Unit (Self)</h4>
+                    <p>Definition, function, and examples</p>
+                    <div class="slide-count">3 slides</div>
+                    <a href="person3.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="4">
+                    <div class="card-header">
+                        <i class="fas fa-mind-share"></i>
+                        <h3>Singh Aayush Kumar</h3> <br>
+                    </div>
+                    <h4>Mind</h4>
+                    <p>Definition, function, and examples</p>
+                    <div class="slide-count">3 slides</div>
+                    <a href="person4.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="5">
+                    <div class="card-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Patil Aditya Vijay</h3> <br>
+                    </div>
+                    <h4>Intelligence</h4>
+                    <p>Definition, function, and examples</p>
+                    <div class="slide-count">3 slides</div>
+                    <a href="person5.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="6">
+                    <div class="card-header">
+                        <i class="fas fa-mask"></i>
+                        <h3>Kapse Kapil Nandkumar</h3> <br>
+                    </div>
+                    <h4>Ego</h4>
+                    <p>Definition, function, and examples</p>
+                    <div class="slide-count">3 slides</div>
+                    <a href="person6.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="7">
+                    <div class="card-header">
+                        <i class="fas fa-network-wired"></i>
+                        <h3>Skand Chaubey</h3> <br>
+                    </div>
+                    <h4>Functions—Summary</h4>
+                    <p>Compare/contrast components and inter-relations</p>
+                    <div class="slide-count">4 slides</div>
+                    <a href="person7.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="8">
+                    <div class="card-header">
+                        <i class="fas fa-microscope"></i>
+                        <h3>Pipaliya Vaidik Sanjaybhai</h3> <br>
+                    </div>
+                    <h4>Examples—Case Studies</h4>
+                    <p>Real-life examples for each component</p>
+                    <div class="slide-count">4 slides</div>
+                    <a href="person8.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="9">
+                    <div class="card-header">
+                        <i class="fas fa-plus-circle"></i>
+                        <h3>Birajdar Shafilbi Mahibub</h3> <br>
+                    </div>
+                    <h4>Positive Effects</h4>
+                    <p>How consciousness components positively influence us</p>
+                    <div class="slide-count">3 slides</div>
+                    <a href="person9.html" class="card-btn">View Content</a>
+                </div>
+
+                <div class="team-card" data-person="10">
+                    <div class="card-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Singh Priyamvada Vishal</h3> <br>
+                    </div>
+                    <h4>Negative Effects & Conclusion</h4>
+                    <p>Negative influences, summary, and concluding remarks</p>
+                    <div class="slide-count">2 slides</div>
+                    <a href="person10.html" class="card-btn">View Content</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Research Section -->
+    <section class="research-highlights" id="Latest-Research">
+        <div class="container">
+            <h2>Latest 2024-2025 Research Highlights</h2>
+            <div class="research-grid">
+                <div class="research-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>Breakthrough Study</h3>
+                    <p>Allen Institute challenges existing theories, showing consciousness is more about perception than
+                        reasoning</p>
+                </div>
+                <br>
+                <div class="research-card">
+                    <i class="fas fa-network-wired"></i>
+                    <h3>Brain Networks</h3>
+                    <p>New Default Ascending Arousal Network (DAAN) mapping identifies consciousness pathways</p>
+                </div>
+                <br>
+                <div class="research-card">
+                    <i class="fas fa-medical-kit"></i>
+                    <h3>Clinical Applications</h3>
+                    <p>Ultra-overt therapy and neuromodulation treatments for consciousness disorders</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Consciousness Studies</h3>
+                    <p>Exploring the depths of human consciousness through scientific research and analysis.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="person1.html">Introduction</a></li>
+                        <li><a href="person2.html">Components</a></li>
+                        <li><a href="person8.html">Case Studies</a></li>
+                        <li><a href="person10.html">Conclusion</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Research</h4>
+                    <p>Based on 40+ current research sources from leading institutions worldwide.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect with Me</h4>
+                    <ul>
+                        <li>
+                            <a href="https://www.linkedin.com/in/skand-chaubey-30b51024b" target="_blank">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/Skand03" target="_blank">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Consciousness Studies. Educational presentation based on scientific research.
+                    <!-- <h1 style="color: blueviolet;"><i><u>Radhe Radhe</u></i></h1> -->
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src=" script.js">
+    </script>
+</body>
+
+</html>

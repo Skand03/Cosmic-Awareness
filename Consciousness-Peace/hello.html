@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Report: The Foundations of Consciousness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-start: #01021d;
+            --bg-end: #0c083b;
+            --card-bg: rgba(14, 21, 64, 0.6);
+            --border-color: rgba(60, 80, 150, 0.5);
+            --text-color: #d1d9ff;
+            --glow-color: #4ac7ff;
+            --accent-color: #5d6eff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            color: var(--text-color);
+        }
+
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s, text-shadow 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--glow-color);
+            border-bottom-color: var(--glow-color);
+            text-shadow: 0 0 8px rgba(74, 199, 255, 0.6);
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(74, 199, 255, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .flowchart-node {
+            background: rgba(20, 30, 90, 0.6);
+            border: 2px solid rgba(74, 199, 255, 0.3);
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .flowchart-node.active,
+        .flowchart-node:hover {
+            background: rgba(74, 199, 255, 0.2);
+            border-color: var(--glow-color);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .flowchart-arrow {
+            color: #d1d9ff;
+            font-size: 2rem;
+            line-height: 1;
+            text-shadow: 0 0 5px rgba(209, 217, 255, 0.4);
+        }
+
+        .accordion-header {
+            background: var(--card-bg);
+            transition: background-color 0.3s;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .accordion-header:hover {
+            background-color: rgba(14, 21, 64, 0.8);
+        }
+
+        .accordion-content {
+            background: rgba(14, 21, 64, 0.4);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 450px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .glowing-button {
+            background: linear-gradient(90deg, #5d6eff, #4ac7ff);
+            box-shadow: 0 0 10px rgba(93, 110, 255, 0.6), 0 0 20px rgba(93, 110, 255, 0.4);
+            transition: all 0.3s;
+        }
+
+        .glowing-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(93, 110, 255, 0.8), 0 0 30px rgba(93, 110, 255, 0.6);
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <header class="bg-black/40 backdrop-blur-lg sticky top-0 z-50 shadow-lg">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-white">The Human System</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="nav-link text-gray-300 border-b-2 border-transparent pb-1">Home</a>
+                <a href="#how-it-works" class="nav-link text-gray-300 border-b-2 border-transparent pb-1">How It
+                    Works</a>
+                <a href="#case-studies" class="nav-link text-gray-300 border-b-2 border-transparent pb-1">Case
+                    Studies</a>
+                <a href="#big-picture" class="nav-link text-gray-300 border-b-2 border-transparent pb-1">The Big
+                    Picture</a>
+                <a href="quiz.html"
+                    class="nav-link text-gray-300 border-b-2 border-transparent pb-1">Self-Assessment</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none">
+                <span class="text-2xl">&#9776;</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <a href="#components" class="block py-2 text-gray-300">Core Components</a>
+            <a href="#how-it-works" class="block py-2 text-gray-300">How It Works</a>
+            <a href="#case-studies" class="block py-2 text-gray-300">Case Studies</a>
+            <a href="#big-picture" class="block py-2 text-gray-300">The Big Picture</a>
+            <a href="quiz.html" class="block py-2 text-gray-300">Self-Assessment</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="hero" class="text-center mb-20">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">An Interactive Exploration of Consciousness</h2>
+            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">This application translates an expert report
+                on the foundations of consciousness into an interactive experience. Navigate through the core concepts,
+                explore how they interconnect, and delve into the latest research shaping our understanding of the human
+                mind.</p>
+        </section>
+
+        <section id="components" class="mb-20">
+            <h3 class="text-3xl font-bold text-center mb-2 text-white">The Core Components</h3>
+            <p class="text-lg text-gray-300 text-center max-w-3xl mx-auto mb-12">Consciousness is not a single entity
+                but an emergent property of a complex system. The foundational pillars of this system are the Self,
+                Mind, Intelligence, and Ego. Click on each card to explore its definition, function, and role within the
+                larger framework of human awareness.</p>
+            <div id="component-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            </div>
+            <div id="component-details" class="mt-12 p-8 rounded-lg shadow-lg"
+                style="display: none; background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+            </div>
+        </section>
+
+        <section id="how-it-works" class="mb-20">
+            <h3 class="text-3xl font-bold text-center mb-2 text-white">How It All Works Together</h3>
+            <p class="text-lg text-gray-300 text-center max-w-3xl mx-auto mb-12">Understanding the components is the
+                first step. The next is seeing how they interact to create our subjective reality. This section provides
+                a comparative analysis and a visual flowchart mapping the journey from a simple external stimulus to a
+                fully formed conscious experience, integrating key neuroscientific theories.</p>
+
+            <div class="p-8 rounded-lg shadow-lg mb-12"
+                style="background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+                <h4 class="text-2xl font-bold mb-4 text-center text-white">Comparative Analysis</h4>
+                <div class="overflow-x-auto">
+                    <table id="comparison-table" class="w-full text-left">
+                    </table>
+                </div>
+            </div>
+
+            <div class="p-8 rounded-lg shadow-lg"
+                style="background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+                <h4 class="text-2xl font-bold mb-6 text-center text-white">The Journey to Conscious Experience</h4>
+                <div id="flowchart" class="flex flex-col items-center space-y-4"></div>
+                <div id="flowchart-details" class="mt-8 p-6 rounded-md border text-center"
+                    style="display: none; background: rgba(14, 21, 64, 0.4); border-color: rgba(60, 80, 150, 0.3);">
+                </div>
+            </div>
+        </section>
+
+        <section id="intelligences" class="mb-20">
+            <h3 class="text-3xl font-bold text-center mb-2 text-white">The Spectrum of Intelligence</h3>
+            <p class="text-lg text-gray-300 text-center max-w-3xl mx-auto mb-12">Modern theory suggests intelligence
+                isn't a single, general ability but a collection of distinct modalities. Our unique combination of these
+                intelligences shapes the very content and quality of our conscious experience. Interact with the chart
+                below to see how different profiles might vary.</p>
+            <div class="p-8 rounded-lg shadow-lg"
+                style="background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+                <div class="chart-container">
+                    <canvas id="intelligencesChart"></canvas>
+                </div>
+                <div id="intelligence-buttons" class="flex justify-center flex-wrap gap-3 mt-6">
+                </div>
+            </div>
+        </section>
+
+        <section id="case-studies" class="mb-20">
+            <h3 class="text-3xl font-bold text-center mb-2 text-white">Insights from the Frontiers</h3>
+            <p class="text-lg text-gray-300 text-center max-w-3xl mx-auto mb-12">Our understanding of consciousness is
+                constantly evolving, driven by neurological case studies and bold new theories that push the boundaries
+                of science. Explore these fascinating areas to see how disruptions to the brain reveal its inner
+                workings and how physics may hold the ultimate key to the "Hard Problem."</p>
+            <div id="accordion-container" class="space-y-4 max-w-4xl mx-auto">
+            </div>
+        </section>
+
+        <section id="big-picture" class="mb-12">
+            <h3 class="text-3xl font-bold text-center mb-2 text-white">The Human Impact</h3>
+            <p class="text-lg text-gray-300 text-center max-w-3xl mx-auto mb-12">The interplay of these components has a
+                profound impact on our well-being. The capacity for self-reflection can lead to immense growth, but when
+                distorted by the Ego, it can become a source of suffering. This final section explores this duality and
+                the pressing philosophical questions raised by artificial intelligence.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div id="positive-impact" class="p-8 rounded-lg shadow-lg"
+                    style="background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+                </div>
+                <div id="negative-impact" class="p-8 rounded-lg shadow-lg"
+                    style="background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+                </div>
+            </div>
+            <div id="ai-debate" class="mt-8 p-8 rounded-lg shadow-lg"
+                style="background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);">
+            </div>
+        </section>
+
+        <section id="assessment-link" class="mb-20 text-center">
+            <h3 class="text-3xl font-bold text-center mb-4 text-white">Ready for Self-Assessment?</h3>
+            <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-8">Take a moment to reflect on your relationship with
+                your Ego and get personalized insights. This quiz is designed to help you become more aware of your own
+                patterns.</p>
+            <a href="quiz.html"
+                class="inline-block py-3 px-8 rounded-full text-white font-bold text-lg glowing-button transition-all duration-300 hover:scale-105">Start
+                Self-Assessment</a>
+        </section>
+
+    </main>
+
+    <footer class="bg-black/20 border-t border-gray-700 mt-12">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500">
+            <p>&copy; 2025 Interactive Consciousness Report. An educational tool based on "The Human System: An Expert
+                Report on the Foundations of Consciousness".</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const data = {
+                components: [
+                    { id: 'self', title: 'The Self', icon: '👤', short: 'The architect of identity, unifying our experiences into a coherent "I".', content: `<h5>Definition</h5><p>The "totality of the individual," encompassing all characteristic attributes, conscious and unconscious. It is the subject of experience and the embodiment of personal identity.</p><h5>Function</h5><p>The Self provides a continuous and unified sense of identity. William James distinguished between the "I" (the subjective knower) and the "me" (the object that is known). It has three parts: Self-knowledge (what we know about ourselves), the Interpersonal Self (our public persona), and the Agent Self (the part that makes choices).</p><h5>Example</h5><p>When you reflect on your past achievements and future goals to make a major life decision, you are engaging your Agent Self, guided by your Self-knowledge.</p>` },
+                    { id: 'mind', title: 'The Mind', icon: '🧠', short: 'The operational seat of cognition, containing all thoughts, feelings, and perceptions.', content: `<h5>Definition</h5><p>The "totality of psychological phenomena and capacities," including both conscious and unconscious states. It is the seat of consciousness, emotions, and thoughts.</p><h5>Function</h5><p>The Mind is the container for all other components. Its core functions include Perception (interpreting sensory info), Memory (storing and recalling), Thought (problem-solving), Imagination, and Emotion. It processes both raw feelings (qualia) and logical beliefs (propositional states).</p><h5>Example</h5><p>Seeing a storm cloud (perception), remembering you left a window open (memory), and deciding to go close it (thought) is a sequence of functions performed by the mind.</p>` },
+                    { id: 'intelligence', title: 'Intelligence', icon: '💡', short: 'The engine of capability, shaping the quality and content of our experience.', content: `<h5>Definition</h5><p>Not a single entity, but a collection of distinct modalities, as proposed by Howard Gardner. An individual's unique blend of these intelligences shapes their capabilities.</p><h5>Function</h5><p>Intelligence is the capacity for problem-solving and adaptation. The theory of multiple intelligences identifies eight types, including Linguistic, Logical-Mathematical, Spatial, Musical, Bodily-Kinesthetic, Interpersonal, Intrapersonal, and Naturalistic. These shape how we experience and interact with the world.</p><h5>Example</h5><p>A skilled surgeon uses high Bodily-Kinesthetic intelligence, while a therapist relies on high Interpersonal and Intrapersonal intelligence.</p>` },
+                    { id: 'ego', title: 'The Ego', icon: '🛡️', short: 'The protective filter of perception, mediating between instinct and morality.', content: `<h5>Definition</h5><p>A mental structure composed of thoughts and beliefs about "me." It mediates between the primal Id and the moral Superego, aiming to protect the Self.</p><h5>Function</h5><p>The Ego acts as a filter for perception. Its primary function is survival, often by creating a stable, rigid identity. This can lead to an overestimated ego (arrogance) or a delicate ego (anxiety). It creates suffering when it rigidly identifies with thoughts and desires that don't match reality.</p><h5>Example</h5><p>Feeling personally attacked and becoming defensive after receiving constructive criticism is a classic manifestation of the Ego protecting its self-image.</p>` }
+                ],
+                comparison: {
+                    headers: ['Component', 'Primary Function', 'Relationship to Consciousness', 'Primary Motivation'],
+                    rows: [
+                        ['Self', 'Unifying identity; the "who"', 'The lived and experienced "I" and "me"', 'To unify, cohere, and relate to others'],
+                        ['Mind', 'Totality of psychological phenomena', 'The operational "container" for all processes', 'To perceive, process, and understand'],
+                        ['Ego', 'Reality mediation and self-protection', 'The "filter" through which consciousness is perceived', 'To protect, identify, and avoid pain'],
+                        ['Intelligence', 'Problem-solving and adaptation', 'A shaping force on the content of experience', 'To learn, adapt, and navigate the world']
+                    ]
+                },
+                flowchart: [
+                    { id: 'stimulus', title: '1. Unconscious Input', content: 'An external stimulus is received by a sensory organ and processed by a local, specialized brain network. This is fast, automatic, and entirely unconscious. <strong>Example: Blindsight</strong>, where patients can react to visual stimuli without consciously "seeing" them.' },
+                    { id: 'broadcast', title: '2. Global Broadcast (GWT)', content: 'Information is broadcast from its local network to a "global workspace," making it available to cognitive processes like memory and language. <strong>Example: Anesthesia</strong> disrupts this broadcast, localizing brain activity and "turning off" consciousness.' },
+                    { id: 'integration', title: '3. Integrated Information (IIT)', content: 'As information spreads, it is integrated across brain regions, creating a complex, irreducible whole. This integration is the quantifiable basis of consciousness according to Integrated Information Theory.' },
+                    { id: 'representation', title: '4. Higher-Order Representation (HOT)', content: 'The mind forms a holistic, conceptual representation of the object (e.g., a "tree") rather than just processing raw data of "color" and "shape." This requires meta-representations in higher brain areas.' },
+                    { id: 'experience', title: '5. Conscious Experience (MToC)', content: 'The subjective, qualitative experience (qualia) emerges. This "what it is like" feeling is then integrated into a coherent, time-stamped narrative by memory systems, forming the "stream of consciousness."' }
+                ],
+                intelligences: {
+                    labels: ['Linguistic', 'Logical', 'Spatial', 'Musical', 'Kinesthetic', 'Interpersonal', 'Intrapersonal', 'Naturalist'],
+                    profiles: [
+                        { name: 'Default', data: [6, 7, 5, 4, 6, 8, 9, 5] },
+                        { name: 'Artist', data: [7, 4, 9, 8, 7, 6, 8, 6] },
+                        { name: 'Engineer', data: [5, 9, 8, 3, 5, 6, 7, 4] },
+                        { name: 'Therapist', data: [8, 7, 5, 5, 6, 10, 10, 6] },
+                        { name: 'Athlete', data: [5, 6, 7, 4, 10, 8, 8, 5] }
+                    ]
+                },
+                accordion: [
+                    { title: 'Neurological Case Study: Blindsight & Split-Brain', content: '<p><strong>Blindsight:</strong> Patients with damage to their primary visual cortex report being blind. However, they can guess the location of objects in their "blind" field with high accuracy. This proves a dissociation between acting on information (Access consciousness) and being aware of it (Phenomenal consciousness).</p><p><strong>Split-Brain Patients:</strong> When the connection between brain hemispheres is severed, a stimulus shown to one hemisphere can trigger a response (e.g., with the corresponding hand) without the patient having any conscious knowledge of it in the other hemisphere. This refutes the idea of a single "seat" of consciousness, suggesting it is an emergent property of integrated, system-wide activity.</p>' },
+                    { title: 'The Quantum Frontier: Orch-OR Theory', content: '<p>Proposed by Roger Penrose and Stuart Hameroff, the Orchestrated Objective Reduction (Orch-OR) model suggests consciousness is a quantum process occurring inside microtubules within neurons. Each conscious moment is theorized to be a quantum wave-function collapse.</p><p>While long criticized because the brain was considered too "warm, wet, and noisy" for delicate quantum states, recent research has challenged this. Studies have shown that quantum phenomena like entanglement and coherence can persist in biological systems at body temperature, lending new plausibility to these frontier theories.</p>' },
+                ],
+                impact: {
+                    positive: `
+                        <h4 class="text-2xl font-bold mb-4 text-white">The Power of Self-Awareness</h4>
+                        <p class="mb-4 text-gray-300">The positive impact of consciousness stems from self-awareness—the ability to observe our own thoughts and emotions. This separates the "thinker" from the "thoughts," allowing us to gain perspective and agency.</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300">
+                            <li><strong>Emotional Intelligence:</strong> By identifying emotional triggers, we can respond thoughtfully rather than react impulsively.</li>
+                            <li><strong>Improved Decisions:</strong> Awareness of our values helps us make choices that are in true alignment with them.</li>
+                            <li><strong>Resilience:</strong> A growth mindset, fostered by self-awareness, views criticism as an opportunity to improve, not a personal attack.</li>
+                        </ul>`,
+                    negative: `
+                        <h4 class="text-2xl font-bold mb-4 text-white">The Pitfalls of the Ego</h4>
+                        <p class="mb-4 text-gray-300">The same capacity for self-reflection, when distorted by the Ego, becomes a source of suffering. This arises from the Ego's tendency to rigidly "identify" with thoughts, creating attachments that misalign with reality.</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-300">
+                            <li><strong>Taking Things Personally:</strong> An ego-driven person is often in a state of stress and anxiety, as reality rarely matches their rigid expectations.</li>
+                            <li><strong>Resistance to Change:</strong> Any threat to the Ego's self-image is perceived as an existential threat, preventing growth.</li>
+                            <li><strong>Spiritual Bypassing:</strong> Using spiritual ideas to avoid uncomfortable emotions is a form of escapism that prevents genuine healing.</li>
+                        </ul>`,
+                    ai: `
+                        <h4 class="text-2xl font-bold mb-4 text-white">The Big Question: AI Consciousness</h4>
+                        <p class="mb-4 text-gray-300">The rise of AI forces us to confront our own definitions of consciousness. Can a machine ever be truly conscious, or does it only emulate human processes? The core of the debate centers on "qualia"—the raw, subjective experience of feeling, which AI lacks. It operates on statistical associations, not inner awareness.</p>
+                        <p class="text-gray-300">This uncertainty creates a profound ethical dilemma. Assuming AI is not conscious risks creating and mistreating sentient beings. Assuming it is conscious risks diverting valuable resources to insentient machines. The debate is a mirror, reflecting our own incomplete understanding of what it means to be conscious.</p>`
+                }
+            };
+
+            const componentCardsContainer = document.getElementById('component-cards');
+            const componentDetailsContainer = document.getElementById('component-details');
+            data.components.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 rounded-lg shadow-md cursor-pointer text-center text-white';
+                card.dataset.id = comp.id;
+                card.innerHTML = `<div class="text-4xl mb-3">${comp.icon}</div><h4 class="text-xl font-bold mb-2">${comp.title}</h4><p class="text-gray-400">${comp.short}</p>`;
+                componentCardsContainer.appendChild(card);
+            });
+
+            componentCardsContainer.addEventListener('click', (e) => {
+                const card = e.target.closest('.card');
+                if (card) {
+                    const componentId = card.dataset.id;
+                    const componentData = data.components.find(c => c.id === componentId);
+
+                    document.querySelectorAll('.card').forEach(c => c.classList.remove('ring-2', 'ring-offset-2', 'ring-[#4ac7ff]'));
+                    card.classList.add('ring-2', 'ring-offset-2', 'ring-[#4ac7ff]');
+
+                    componentDetailsContainer.style.display = 'block';
+                    componentDetailsContainer.innerHTML = `
+                        <div class="flex items-center mb-4 text-white">
+                            <span class="text-3xl mr-4">${componentData.icon}</span>
+                            <h3 class="text-2xl font-bold">${componentData.title}</h3>
+                        </div>
+                        <div class="prose max-w-none text-gray-300">${componentData.content.replace(/<h5>/g, '<h5 class="font-semibold mt-4 mb-1 text-white">')}</div>`;
+                    componentDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+
+            const comparisonTable = document.getElementById('comparison-table');
+            let tableHTML = `<thead><tr class="border-b-2 border-gray-700">`;
+            data.comparison.headers.forEach(header => tableHTML += `<th class="p-3 font-semibold uppercase text-sm text-gray-400">${header}</th>`);
+            tableHTML += `</tr></thead><tbody>`;
+            data.comparison.rows.forEach(row => {
+                tableHTML += `<tr class="border-b border-gray-800 hover:bg-gray-800/50">`;
+                row.forEach(cell => tableHTML += `<td class="p-3 text-gray-300">${cell}</td>`);
+                tableHTML += `</tr>`;
+            });
+            tableHTML += `</tbody>`;
+            comparisonTable.innerHTML = tableHTML;
+
+            const flowchartContainer = document.getElementById('flowchart');
+            const flowchartDetailsContainer = document.getElementById('flowchart-details');
+            data.flowchart.forEach((node, index) => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'flowchart-node w-full max-w-md p-4 rounded-lg shadow-sm cursor-pointer text-center text-white';
+                nodeEl.dataset.id = node.id;
+                nodeEl.textContent = node.title;
+                flowchartContainer.appendChild(nodeEl);
+                if (index < data.flowchart.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'flowchart-arrow';
+                    arrow.innerHTML = '&#8595;';
+                    flowchartContainer.appendChild(arrow);
+                }
+            });
+
+            flowchartContainer.addEventListener('click', (e) => {
+                const node = e.target.closest('.flowchart-node');
+                if (node) {
+                    const nodeId = node.dataset.id;
+                    const nodeData = data.flowchart.find(n => n.id === nodeId);
+
+                    document.querySelectorAll('.flowchart-node').forEach(n => n.classList.remove('active'));
+                    node.classList.add('active');
+
+                    flowchartDetailsContainer.style.display = 'block';
+                    flowchartDetailsContainer.innerHTML = `<p class="text-gray-300">${nodeData.content}</p>`;
+                }
+            });
+
+            const intelligenceButtonsContainer = document.getElementById('intelligence-buttons');
+            data.intelligences.profiles.forEach(profile => {
+                const button = document.createElement('button');
+                button.className = 'px-4 py-2 bg-gray-800 text-gray-300 rounded-md hover:bg-orange-600 hover:text-white transition';
+                button.textContent = profile.name;
+                button.dataset.profile = profile.name;
+                intelligenceButtonsContainer.appendChild(button);
+            });
+
+            const ctx = document.getElementById('intelligencesChart').getContext('2d');
+            const intelligencesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.intelligences.labels,
+                    datasets: [{
+                        label: 'Intelligence Score',
+                        data: data.intelligences.profiles[0].data,
+                        backgroundColor: 'rgba(74, 199, 255, 0.6)',
+                        borderColor: 'rgba(74, 199, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.6)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return ` ${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            intelligenceButtonsContainer.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const profileName = e.target.dataset.profile;
+                    const profileData = data.intelligences.profiles.find(p => p.name === profileName).data;
+                    intelligencesChart.data.datasets[0].data = profileData;
+                    intelligencesChart.update();
+                }
+            });
+
+            const accordionContainer = document.getElementById('accordion-container');
+            data.accordion.forEach(item => {
+                const accItem = document.createElement('div');
+                accItem.className = 'rounded-lg shadow-lg overflow-hidden';
+                accItem.style.cssText = 'background: rgba(14, 21, 64, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(60, 80, 150, 0.5);';
+                accItem.innerHTML = `
+                    <div class="accordion-header w-full p-5 text-left font-semibold text-lg flex justify-between items-center cursor-pointer text-white">
+                        <span>${item.title}</span>
+                        <span class="accordion-icon text-xl text-gray-400 transition-transform transform">&#43;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="p-5 pt-0 text-gray-300">${item.content}</div>
+                    </div>
+                `;
+                accordionContainer.appendChild(accItem);
+            });
+
+            accordionContainer.addEventListener('click', (e) => {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                    document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = '0px');
+                    document.querySelectorAll('.accordion-icon').forEach(i => {
+                        i.innerHTML = '&#43;';
+                        i.classList.remove('rotate-45');
+                    });
+
+                    if (!isOpen) {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.innerHTML = '&#8722;';
+                        icon.classList.add('rotate-45');
+                    }
+                }
+            });
+
+            document.getElementById('positive-impact').innerHTML = data.impact.positive;
+            document.getElementById('negative-impact').innerHTML = data.impact.negative;
+            document.getElementById('ai-debate').innerHTML = data.impact.ai;
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

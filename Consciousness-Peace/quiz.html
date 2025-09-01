@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Assessment Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at center, #0b0c2e 0%, #1a1a4d 100%);
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            box-shadow:
+                50px 100px rgb(3, 2, 2),
+                150px 200px rgb(27, 22, 22),
+                300px 400px rgb(43, 40, 13),
+                450px 50px rgb(58, 25, 25),
+                600px 300px rgb(50, 126, 84),
+                750px 150px rgb(190, 163, 39),
+                900px 500px rgb(68, 95, 33),
+                1050px 250px rgb(18, 108, 182),
+                1200px 400px rgb(161, 27, 121),
+                1350px 100px white;
+            animation: stars 60s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes stars {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+
+            100% {
+                transform: translateY(-1000px) translateX(-500px);
+            }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 20;
+            background: rgba(0, 0, 20, 0.85);
+            backdrop-filter: blur(6px);
+        }
+
+
+        #space-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .quiz-container {
+            position: relative;
+            background: rgba(10, 10, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            z-index: 10;
+            margin: 4rem auto;
+            max-width: 700px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+
+        .quiz-container:hover {
+            transform: scale(1.02);
+        }
+
+        @media(min-width: 640px) {
+            .quiz-option {
+                flex: 1 1 calc(50% - 1rem);
+                /* two options per row on small tablets */
+            }
+        }
+
+        @media(min-width: 1024px) {
+            .quiz-option {
+                flex: 1 1 calc(33.33% - 1rem);
+                /* three options per row on large screens */
+            }
+        }
+
+        .quiz-option {
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+            flex: 1;
+            transition: all 0.4s ease;
+        }
+
+        .quiz-option:hover {
+            background: linear-gradient(135deg, #6e0bff, #0be6ff);
+            color: #fff;
+            box-shadow: 0 0 15px #0be6ff, 0 0 25px #6e0bff;
+            transform: translateY(-2px);
+        }
+
+        .quiz-option.selected {
+            background: linear-gradient(135deg, #7c3aed, #3b82f6);
+            color: #fff;
+            box-shadow: 0 0 15px #7c3aed, 0 0 25px #3b82f6;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px 0;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            background: linear-gradient(90deg, #6e0bff, #0be6ff);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(120, 80, 200, 0.5);
+            transition: all 0.4s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #0be6ff, 0 0 30px #6e0bff;
+        }
+
+        #quiz-results {
+            background: linear-gradient(135deg, rgba(30, 30, 60, 0.9), rgba(50, 20, 80, 0.9));
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 0 30px rgba(120, 80, 200, 0.5), 0 10px 20px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.6s ease;
+            z-index: 10;
+        }
+
+        #quiz-results.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #reset-quiz {
+            background: linear-gradient(135deg, #f97316, #facc15);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #reset-quiz:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #facc15, 0 0 25px #f97316;
+        }
+    </style>
+</head>
+
+<body class="antialiased flex items-center justify-center min-h-screen p-4 flex-col">
+    <canvas id="space-canvas"></canvas>
+
+    <header class="shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center text-white">
+            <h1 class="text-xl md:text-2xl font-bold">The Human System</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="index.html" class="text-gray-200 border-b-2 border-transparent pb-1 hover:border-white">Back to
+                    Report</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-200 focus:outline-none">
+                <span class="text-2xl">&#9776;</span>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col gap-2">
+            <a href="index.html" class="text-gray-200">Back to Report</a>
+        </div>
+    </header>
+
+    <div class="w-full max-w-4xl mt-32 z-10">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2">Self-Assessment</h1>
+            <p class="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">This quiz helps you reflect on your Ego.
+                Gain self-awareness by answering honestly.</p>
+        </div>
+
+        <div id="quiz-container" class="quiz-container">
+            <form id="quiz-form" class="space-y-6">
+                <!-- Question 1 -->
+                <div>
+                    <p class="font-semibold text-lg mb-2">1. When I receive constructive criticism, I tend to feel
+                        personally attacked.</p>
+                    <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                        <label class="quiz-option"><input type="radio" name="q1" value="1" class="hidden">Strongly
+                            Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="2"
+                                class="hidden">Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="3"
+                                class="hidden">Neutral</label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="4" class="hidden">Agree</label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="5" class="hidden">Strongly
+                            Agree</label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div>
+                    <p class="font-semibold text-lg mb-2">2. My mood is often influenced by what others think of me.</p>
+                    <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                        <label class="quiz-option"><input type="radio" name="q2" value="1" class="hidden">Strongly
+                            Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="2"
+                                class="hidden">Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="3"
+                                class="hidden">Neutral</label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="4" class="hidden">Agree</label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="5" class="hidden">Strongly
+                            Agree</label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div>
+                    <p class="font-semibold text-lg mb-2">3. I find it difficult to admit when I've made a mistake.</p>
+                    <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                        <label class="quiz-option"><input type="radio" name="q3" value="1" class="hidden">Strongly
+                            Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="2"
+                                class="hidden">Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="3"
+                                class="hidden">Neutral</label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="4" class="hidden">Agree</label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="5" class="hidden">Strongly
+                            Agree</label>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div>
+                    <p class="font-semibold text-lg mb-2">4. I often feel the need to prove my value to others.</p>
+                    <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                        <label class="quiz-option"><input type="radio" name="q4" value="1" class="hidden">Strongly
+                            Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="2"
+                                class="hidden">Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="3"
+                                class="hidden">Neutral</label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="4" class="hidden">Agree</label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="5" class="hidden">Strongly
+                            Agree</label>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div>
+                    <p class="font-semibold text-lg mb-2">5. I tend to avoid new experiences or challenges that might
+                        expose a weakness.</p>
+                    <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                        <label class="quiz-option"><input type="radio" name="q5" value="1" class="hidden">Strongly
+                            Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="2"
+                                class="hidden">Disagree</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="3"
+                                class="hidden">Neutral</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="4" class="hidden">Agree</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="5" class="hidden">Strongly
+                            Agree</label>
+                    </div>
+                </div>
+
+                <button type="submit">Get My Results</button>
+            </form>
+        </div>
+
+        <div id="quiz-results">
+            <div class="text-center mb-4">
+                <h4 class="text-2xl font-bold">Your Result: <span id="result-title"></span></h4>
+                <p class="text-sm font-medium text-gray-300">Score: <span id="result-score"></span> / 25</p>
+            </div>
+            <div id="result-text" class="mb-4"></div>
+            <button id="reset-quiz">Reset Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = {
+                low: {
+                    title: 'Balanced and Aware',
+                    text: 'You have a strong sense of self and a healthy relationship with your Ego. You are likely able to observe your thoughts and emotions without being overwhelmed by them. This balance allows you to make conscious choices and maintain calm even in challenging situations. Keep practicing mindfulness to sustain this self-awareness.'
+                },
+                medium: {
+                    title: 'Mindful Explorer',
+                    text: 'Your score indicates that you are on a conscious journey toward self-awareness. You may sometimes be influenced by your Ego, but you also have the ability to reflect and grow. This is a great time to strengthen habits that promote clarity and emotional balance. Focus on separating your self-worth from external validation and observing your reactions before acting.'
+                },
+                high: {
+                    title: 'Ego-Driven Patterns',
+                    text: 'Your results suggest that your Ego has a strong influence on your thoughts and actions. You may find yourself reacting emotionally or seeking validation from others. Awareness is the first step toward regaining control. Practice pausing before responding, admitting mistakes, and reflecting on your internal motivations to develop a more balanced mindset.'
+                }
+            };
+
+
+            const quizForm = document.getElementById('quiz-form');
+            const quizResults = document.getElementById('quiz-results');
+            const resultTitle = document.getElementById('result-title');
+            const resultScore = document.getElementById('result-score');
+            const resultText = document.getElementById('result-text');
+            const resetButton = document.getElementById('reset-quiz');
+
+            // Option selection
+            quizForm.addEventListener('change', e => {
+                const label = e.target.closest('label');
+                if (!label) return;
+                const name = e.target.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(input => input.closest('label').classList.remove('selected'));
+                label.classList.add('selected');
+            });
+
+            // Form submission
+            quizForm.addEventListener('submit', e => {
+                e.preventDefault();
+                const formData = new FormData(quizForm);
+                if (formData.size < 5) { alert('Please answer all questions'); return; }
+
+                let score = 0;
+                formData.forEach(v => score += parseInt(v));
+
+                let result;
+                if (score <= 10) result = data.low;
+                else if (score <= 20) result = data.medium;
+                else result = data.high;
+
+                resultTitle.textContent = result.title;
+                resultScore.textContent = score;
+                resultText.textContent = result.text;
+
+                quizResults.classList.add('show');
+                quizResults.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+
+            // Reset quiz
+            resetButton.addEventListener('click', () => {
+                quizResults.classList.remove('show');
+                quizForm.reset();
+                document.querySelectorAll('.quiz-option').forEach(option => option.classList.remove('selected'));
+                quizForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const planets = [];
+        const satellites = [];
+
+        for (let i = 0; i < 300; i++) {
+            stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 1.5, speed: Math.random() * 0.3 });
+        }
+
+        for (let i = 0; i < 5; i++) {
+            planets.push({ r: 10 + Math.random() * 20, orbitRadius: 50 + Math.random() * 250, angle: Math.random() * Math.PI * 2, speed: 0.001 + Math.random() * 0.002, color: `hsl(${Math.random() * 360},80%,60%)` });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // stars
+            for (let s of stars) {
+                s.y -= s.speed;
+                if (s.y < 0) s.y = canvas.height;
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // sun
+            ctx.fillStyle = 'yellow';
+            ctx.shadowColor = 'yellow';
+            ctx.shadowBlur = 30;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 40, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // planets
+            for (let p of planets) {
+                p.angle += p.speed;
+                let x = canvas.width / 2 + Math.cos(p.angle) * p.orbitRadius;
+                let y = canvas.height / 2 + Math.sin(p.angle) * p.orbitRadius;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(x, y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+    </script>
+</body>
+
+</html>
